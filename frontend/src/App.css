@@ -1,0 +1,20 @@
+
+
+.rowC{display:flex; flex-direction:row;}
+
+button{background-color: #e7e7e7; color: black; border-radius: 12px;}
+
+button {
+    transition-duration: 0.4s;
+  }
+  
+  button:hover {
+    background-color: #ffee69; /* Green */
+    color: black;
+  }
+
+  #timeaggregator{background-color: #d1cfbe;}
+
+  #typeaggregator{background-color: #d1cfbe;}
+
+  #rateaggregator{background-color: #d1cfbe;}
