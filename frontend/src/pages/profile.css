@@ -1,0 +1,35 @@
+#loginneeded {
+    margin: auto;
+    width: 30%;
+    text-align: center;
+    border: 2px solid #63D471;
+    border-radius: 25px;
+}
+
+#loginbutton {
+    background-color:  #63D471; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 20px;
+}
+
+#wrapper {
+    margin: auto;
+    width: 90%;
+    border: 1px solid black;
+    overflow: hidden; /* will contain if #first is longer than #second */
+}
+#profileinfo {
+    width: 50%;
+    float:left; /* add this */
+    border: 1px solid red;
+}
+#favorites{
+    border: 1px solid green;
+    overflow: hidden; /* if you don't want #second to wrap below #first */
+}
