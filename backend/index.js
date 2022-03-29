@@ -43,16 +43,19 @@ let olvasottKonyvek = require('./konyvek.json');
 let monthlyDays = require('./daily.json');
 let calendarData = require('./calendarData.json')
 let checked = require('./checked.json')
-
+let userdata = ""
 
 app.post(
     '/login',
     LokiLocal.use('login', {mode: 'debug'}),
-    (req, res, next) =>
-        res.json(req.user)
-)
-;
+    (req, res, next) => {
+    userdata = req.user
+      return res.json(req.user)
+    });
 
+app.get('/profiledata', function (req, res, next) {
+    return res.json(userdata);
+})
 app.post(
     '/signup',
     LokiLocal.use('signup', {mode: 'debug'}),
