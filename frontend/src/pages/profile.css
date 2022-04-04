@@ -33,3 +33,8 @@
     border: 1px solid green;
     overflow: hidden; /* if you don't want #second to wrap below #first */
 }
+
+#dailytrack{
+    width:50%;
+    float:left;
+}
