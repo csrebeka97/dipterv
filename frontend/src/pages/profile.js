@@ -53,6 +53,7 @@ function Profile() {
         "November": 0,
         "December": 0
     });
+
 	const [calendarData, setCalendarData] = useState({
         labels: Object.keys(checked),
         datasets: [
@@ -277,11 +278,15 @@ function Profile() {
         console.log(calendarData)
     }, [checked])
 
-
 	useEffect(() => {
+        var arr = []
+        Object.keys(checked).forEach(k => {
+            arr.push(checked[k])});
+         if (Math.max(...arr) > 0) {
         client.post('http://localhost:8765/checked', {
             checked: checked
         }).then(console.log);
+        }   
     }, [checked]);
 
 	useEffect(() => {

@@ -21,7 +21,7 @@
     "hooks": "^0.3.2",
     "js-cookie": "^3.0.1",
     "react": "^17.0.2",
-    "react-bootstrap": "^2.0.0",
+    "react-bootstrap": "^2.2.3",
     "react-chartjs-2": "^3.3.0",
     "react-charts": "^2.0.0-beta.7",
     "react-check-calendar": "^1.0.1",

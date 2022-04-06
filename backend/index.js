@@ -78,6 +78,8 @@ function generatefiles(user){
     })
     userdata.username = user.id;
     userdata.name = user.name;
+    userdata.genres = [];
+    userdata.introduction = "";
      fs.writeFile(`${dirname}/userdata.json`, JSON.stringify(userdata), (err) => {
         if (err) throw err;
     })
@@ -128,12 +130,15 @@ passport.deserializeUser(function(user, done) {
 });
 
 app.post('/olvasottKonyvek', function (req, res, next) {
-    olvasottKonyvek = req.body.olvasottKonyvek
+   
+    olvasottKonyvek = req.body.olvasottKonyvek;
+    if (olvasottKonyvek != "" || olvasottKonyvek != []){
     fs.writeFileSync(`${dirname}/konyvek.json`, JSON.stringify(olvasottKonyvek), (err) => {
         if (err) throw err;
     })
-
+}
     return res.json({ok: 'ok'})
+
 });
 
 app.post('/dailyTracker', function (req, res, next) {
