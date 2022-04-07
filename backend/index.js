@@ -42,7 +42,8 @@ const calendar = JSON.stringify({"labels":["January","February","March","April",
 let userdata = {"username": "", "name": "", "genres": "", "introduction": ""}
 let dailydata = dailygenerate();
 let dirname = ""
-
+var allfav = require('./allfav.json');
+var favorites = "";
 function dailygenerate(){
     daily = []
     for (var month = 0; month <12; month++){
@@ -76,6 +77,10 @@ function generatefiles(user){
       fs.writeFile(`${dirname}/daily.json`, JSON.stringify(dailydata), (err) => {
         if (err) throw err;
     })
+    fs.writeFile(`${dirname}/favorites.json`, JSON.stringify(data), (err) => {
+        if (err) throw err;
+    })
+
     userdata.username = user.id;
     userdata.name = user.name;
     userdata.genres = [];
@@ -104,6 +109,10 @@ app.post( '/login',
    fs.readFile(`${dirname}/checked.json`,  (err, data) => {
         if (err) throw err;
         checked = JSON.parse(data);
+    })
+    fs.readFile(`${dirname}/favorites.json`,  (err, data) => {
+        if (err) throw err;
+        favorites = JSON.parse(data);
     })
    fs.readFile(`${dirname}/userdata.json`, (err, data) => {
         if (err) throw err;
@@ -134,6 +143,18 @@ app.post('/olvasottKonyvek', function (req, res, next) {
     olvasottKonyvek = req.body.olvasottKonyvek;
     if (olvasottKonyvek != "" || olvasottKonyvek != []){
     fs.writeFileSync(`${dirname}/konyvek.json`, JSON.stringify(olvasottKonyvek), (err) => {
+        if (err) throw err;
+    })
+}
+    return res.json({ok: 'ok'})
+
+});
+
+app.post('/favorites', function (req, res, next) {
+   
+    favorites = req.body.kedvenc;
+    if (favorites != "" || favorites != []){
+    fs.writeFileSync(`${dirname}/favorites.json`, JSON.stringify(favorites), (err) => {
         if (err) throw err;
     })
 }
@@ -178,7 +199,9 @@ app.post('/profiledata', function (req, res, next) {
 app.get('/olvasottKonyvek', function (req, res, next) {
     return res.json(olvasottKonyvek);
 })
-
+app.get('/favorites', function (req, res, next) {
+    return res.json(favorites);
+})
 app.get('/dailyTracker', function (req, res, next) {
     return res.json(monthlyDays);
 })

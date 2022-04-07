@@ -91,6 +91,8 @@ const ReadingTable = () => {
                     {olvasottKonyvek.map((item) => {
                         const index = olvasottKonyvek.findIndex((i) => item.id === i.id);
                         let updatedItem = ""
+                        const favindex = kedvenc.findIndex((i) => item.molyid === i.molyid);
+                                              
                         return (
                             <tr>
                                 <td>{item.id}</td>
@@ -130,11 +132,23 @@ const ReadingTable = () => {
                                     }}><FontAwesomeIcon icon={faTrashAlt}/></button>
                                 </td>
 								<td>
+                                    {item.isKedvenc === false &&
                                     <button class="btn" onClick={e => {
-                                       setKedvenc([...kedvenc, item.molyid]);
+                                       setKedvenc([...kedvenc, item]);                                   
+                                       updatedItem = Object.assign({}, item, {isKedvenc: true})
+                                       setOlvasottKonyvek([...olvasottKonyvek.slice(0, index), updatedItem, ...olvasottKonyvek.slice(index + 1)])
 									   console.log("ez a kedvenc")
-									   console.log(item.molyid)
+									   console.log(kedvenc)
                                     }}><FontAwesomeIcon icon={faHeart} /></button>
+                                }
+                                  {item.isKedvenc === true &&
+                                    <button class="btn" onClick={e => {
+                                        setKedvenc([...kedvenc.slice(0, favindex), ...kedvenc.slice(favindex + 1)])
+                                        updatedItem = Object.assign({}, item, {isKedvenc: false})
+                                    setOlvasottKonyvek([...olvasottKonyvek.slice(0, index), updatedItem, ...olvasottKonyvek.slice(index + 1)])
+                                    }}>Remove from Favorites</button>
+                                }
+                                   
                                 </td>
                             </tr>
                         );
@@ -150,6 +164,14 @@ const ReadingTable = () => {
                 setUserData(res.data)
             });
     }, [])
+
+    useEffect(() => {
+        if (userdata.username != "") {
+        client.get(`http://localhost:8765/favorites`)
+            .then(res => {
+                setKedvenc(res.data)
+            });}
+    }, [userdata])
 
     useEffect(() => {
 		if (userdata.username != "") {
@@ -178,6 +200,14 @@ const ReadingTable = () => {
     }, [olvasottKonyvek]);
 
 	useEffect(() => {
+        if (kedvenc.length) {
+            client.post('http://localhost:8765/favorites', {
+                kedvenc: kedvenc
+            }).then(console.log(kedvenc));
+        }
+    }, [kedvenc]);
+
+	useEffect(() => {
         client.get(`https://moly.hu/api/books.json?q=${encodeURIComponent(kereses)}&key=${APIKEY}`)
             .then(res => {
                 setKonyvek(res.data.books);
@@ -193,6 +223,7 @@ const ReadingTable = () => {
                 const date = `${current.getDate()}/${current.getMonth() + 1}/${current.getFullYear()}`;
                 const data = {
 					molyid: ID,
+                    cover: res.data.book["cover"],
                     id: num,
                     author: res.data.book["authors"].map(a => a.name),
                     title: res.data.book['title'],
@@ -201,7 +232,8 @@ const ReadingTable = () => {
                     tags: res.data.book["tags"].map(a => a.name),
                     type: "",
                     rating: "",
-                    language: ""
+                    language: "",
+                    isKedvenc : false
                 }
                 setOlvasottKonyvek([...olvasottKonyvek, data]);
             });

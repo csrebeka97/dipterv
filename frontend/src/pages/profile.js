@@ -19,6 +19,7 @@ window.testclient = client;
 
 function Profile() {
 	const [userdata, setUserData] = useState("");
+    const [kedvenc, setKedvenc] = useState("");
 	const [genreclick, setGenreClick] = useState(false);
 	const [genreedited, setGenreEdited] = useState(false);
 	const [introclick, setIntroClick] = useState(false);
@@ -229,12 +230,49 @@ function Profile() {
         }
     }
 
+    class FavoriteBooks extends React.Component {
+        render() {
+            return (
+                <Table striped bordered hover >
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                          </tr>
+                    </thead>
+                    <tbody>
+                    {kedvenc.map((item) => {
+                        const index = kedvenc.findIndex((i) => item.id === i.id);
+                                               return (
+                            <tr>
+                                <td><img src={item.cover}></img></td>
+                                <td>{item.author.join(", ")}</td>
+                                <td>{item.title}</td>                                
+                                 </tr>
+                        );
+                    })}
+                    </tbody>
+                </Table>
+            )
+        }
+    }
+
 	useEffect(() => {
         client.get(`http://localhost:8765/dailyTracker`)
             .then(res => {
                 setMonthlyDays([...res.data])
             });
     }, [])
+
+    useEffect(() => {
+        if(userdata.username != "") {
+        client.get(`http://localhost:8765/favorites`)
+            .then(res => {
+                setKedvenc([...res.data])
+            });
+        }
+    }, [userdata])
 
 	useEffect(() => {
 		if(monthlyDays != ""){
@@ -399,7 +437,7 @@ return (
 		</div>
 		<div id="favorites">
 			<h1>Favorite books</h1>
-			<img src="https://moly.hu/system/covers/normal/covers_49254.jpg"></img>
+			<FavoriteBooks />>
 		</div>
 		<div id="dailytrack">
 			<h1>Daily reading tracker</h1>
