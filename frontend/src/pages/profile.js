@@ -366,7 +366,7 @@ useEffect(() => {
 	}
     }, [introedited]) 
 
-	if (userdata === ""){
+	if (userdata === "" || userdata.username == ""){
 		return (
 			<div >
 				<div>

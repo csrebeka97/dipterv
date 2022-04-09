@@ -77,7 +77,7 @@ function generatefiles(user){
       fs.writeFile(`${dirname}/daily.json`, JSON.stringify(dailydata), (err) => {
         if (err) throw err;
     })
-    fs.writeFile(`${dirname}/favorites.json`, JSON.stringify(data), (err) => {
+    fs.writeFile(`${dirname}/favorites.json`, data, (err) => {
         if (err) throw err;
     })
 
@@ -153,11 +153,23 @@ app.post('/olvasottKonyvek', function (req, res, next) {
 app.post('/favorites', function (req, res, next) {
    
     favorites = req.body.kedvenc;
-    if (favorites != "" || favorites != []){
-    fs.writeFileSync(`${dirname}/favorites.json`, JSON.stringify(favorites), (err) => {
+       fs.writeFileSync(`${dirname}/favorites.json`, JSON.stringify(favorites), (err) => {
         if (err) throw err;
     })
-}
+    if(req.body.kedvenc.length >0){
+        let last = req.body.kedvenc[req.body.kedvenc.length -1]
+        const isFound = allfav.some(element => {
+            if (element.molyid === last.molyid) {
+              return true;
+            }
+          });
+        if(!isFound){
+            allfav.push(last);
+            fs.writeFileSync(`./allfav.json`, JSON.stringify(allfav), (err) => {
+                if (err) throw err;
+        })
+    }
+    }
     return res.json({ok: 'ok'})
 
 });
@@ -198,6 +210,10 @@ app.post('/profiledata', function (req, res, next) {
 
 app.get('/olvasottKonyvek', function (req, res, next) {
     return res.json(olvasottKonyvek);
+})
+
+app.get('/allfav', function (req, res, next) {
+    return res.json(allfav);
 })
 app.get('/favorites', function (req, res, next) {
     return res.json(favorites);

@@ -3,12 +3,10 @@ import './readingtable.css';
 import axios from 'axios';
 import {wrapper} from 'axios-cookiejar-support';
 import {CookieJar} from 'tough-cookie';
-import React, {useEffect, useState, useRef, Component} from 'react';
-import Cookies from 'js-cookie';
+import React, {useEffect, useState} from 'react';
 import { Link} from "react-router-dom";
 import Select from 'react-select';
 import Table from 'react-bootstrap/Table';
-import {Bar} from 'react-chartjs-2';
 import DatePicker from "react-datepicker";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faTrashAlt} from "@fortawesome/free-regular-svg-icons";
@@ -43,6 +41,8 @@ const ReadingTable = () => {
         value: 4,
         label: 4
     }, {value: 5, label: 5}];
+    const [allfav, setAllfav] = useState([]);
+    const current = new Date();
 
 	class Searchbar extends React.Component {
         render() {
@@ -69,6 +69,36 @@ const ReadingTable = () => {
         }
     }
 
+    class Suggestions extends React.Component {
+        render() {
+            var filtfav = allfav.filter( x => !olvasottKonyvek.filter( y => y.molyid === x.molyid).length);
+            if(!filtfav.length){
+                return(
+                    <h3>There are no suggestions available yet. :( </h3>
+                )
+            }
+            else{
+            return (
+                filtfav.map(({molyid, title, author}) => {
+                    return (
+                        <div>{title} <b>{author}</b><br/>
+                            <button onClick={() => {
+                                setID(molyid);
+                                setNum(num + 1);
+                                setKonyvek([]);
+                                setKereses("")
+                                setKereso("")
+                            }}>
+                                Reading
+                            </button>
+                            <hr/>
+                        </div>
+                    )
+                }))
+        }
+    }
+}
+
 	class TrackerTable extends React.Component {
         render() {
             return (
@@ -92,7 +122,7 @@ const ReadingTable = () => {
                         const index = olvasottKonyvek.findIndex((i) => item.id === i.id);
                         let updatedItem = ""
                         const favindex = kedvenc.findIndex((i) => item.molyid === i.molyid);
-                                              
+                       console.log(favindex)                       
                         return (
                             <tr>
                                 <td>{item.id}</td>
@@ -102,11 +132,11 @@ const ReadingTable = () => {
                                     updatedItem = Object.assign({}, item, {started: e})
                                     setOlvasottKonyvek([...olvasottKonyvek.slice(0, index), updatedItem, ...olvasottKonyvek.slice(index + 1)])
                                 }}/></td>
-
-                                <td><DatePicker selected={item.ended} onChange={e => {
+                                 <td><DatePicker selected={item.ended} onChange={e => {
                                     updatedItem = Object.assign({}, item, {ended: e})
                                     setOlvasottKonyvek([...olvasottKonyvek.slice(0, index), updatedItem, ...olvasottKonyvek.slice(index + 1)])
                                 }}/></td>
+                                
                                 <td>{item.tags.join(", ")}</td>
                                 <td><Select autosize={true} value={typeOptions.filter(function (option) {
                                     return option.value === item.type;
@@ -131,7 +161,7 @@ const ReadingTable = () => {
                                         setOlvasottKonyvek([...olvasottKonyvek.slice(0, index), ...olvasottKonyvek.slice(index + 1)])
                                     }}><FontAwesomeIcon icon={faTrashAlt}/></button>
                                 </td>
-								<td>
+							<td>
                                     {item.isKedvenc === false &&
                                     <button class="btn" onClick={e => {
                                        setKedvenc([...kedvenc, item]);                                   
@@ -143,7 +173,12 @@ const ReadingTable = () => {
                                 }
                                   {item.isKedvenc === true &&
                                     <button class="btn" onClick={e => {
+                                        if(favindex ===0){
+                                            setKedvenc([]);
+                                        }
+                                        else {
                                         setKedvenc([...kedvenc.slice(0, favindex), ...kedvenc.slice(favindex + 1)])
+                                        }
                                         updatedItem = Object.assign({}, item, {isKedvenc: false})
                                     setOlvasottKonyvek([...olvasottKonyvek.slice(0, index), updatedItem, ...olvasottKonyvek.slice(index + 1)])
                                     }}>Remove from Favorites</button>
@@ -166,7 +201,7 @@ const ReadingTable = () => {
     }, [])
 
     useEffect(() => {
-        if (userdata.username != "") {
+        if (userdata.username !== "") {
         client.get(`http://localhost:8765/favorites`)
             .then(res => {
                 setKedvenc(res.data)
@@ -174,7 +209,14 @@ const ReadingTable = () => {
     }, [userdata])
 
     useEffect(() => {
-		if (userdata.username != "") {
+              client.get(`http://localhost:8765/allfav`)
+            .then(res => {
+                setAllfav(res.data)
+            });
+    }, [])
+
+    useEffect(() => {
+		if (userdata.username !== "") {
         client.get(`http://localhost:8765/olvasottKonyvek`)
             .then(res => {
                 console.log(res.data)
@@ -183,7 +225,8 @@ const ReadingTable = () => {
                 temp.map((i) => {
                     i.started = new Date(i.started)
                     i.id = tempid
-                    tempid = tempid + 1
+                    tempid = tempid + 1;
+                    i.ended = new Date(i.ended)
                 })
                 const toload = [...temp]
                 setOlvasottKonyvek([...toload])
@@ -200,7 +243,7 @@ const ReadingTable = () => {
     }, [olvasottKonyvek]);
 
 	useEffect(() => {
-        if (kedvenc.length) {
+        if (userdata.username  !== "") {
             client.post('http://localhost:8765/favorites', {
                 kedvenc: kedvenc
             }).then(console.log(kedvenc));
@@ -219,8 +262,7 @@ const ReadingTable = () => {
         client.get(`https://moly.hu/api/book/${encodeURIComponent(ID)}.json?key=${APIKEY}`
         )
             .then(res => {
-                const current = new Date();
-                const date = `${current.getDate()}/${current.getMonth() + 1}/${current.getFullYear()}`;
+                
                 const data = {
 					molyid: ID,
                     cover: res.data.book["cover"],
@@ -228,7 +270,7 @@ const ReadingTable = () => {
                     author: res.data.book["authors"].map(a => a.name),
                     title: res.data.book['title'],
                     started: current,
-                    ended: "",
+                    ended: current,
                     tags: res.data.book["tags"].map(a => a.name),
                     type: "",
                     rating: "",
@@ -271,6 +313,7 @@ return (
 		</div>
 		<div id="sugg">
 			<h1>You may also like these:</h1>
+            <Suggestions />
 		</div>
 	</div>
 );
