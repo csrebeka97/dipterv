@@ -15,7 +15,7 @@ import {faTrashAlt} from "@fortawesome/free-regular-svg-icons";
 import {faHeart} from "@fortawesome/free-regular-svg-icons";
 import "react-datepicker/dist/react-datepicker.css";
 import 'bootstrap/dist/css/bootstrap.css';
-
+import { Line } from 'react-chartjs-2';
 
 
 const jar = new CookieJar();
@@ -24,6 +24,11 @@ client.defaults.withCredentials = true
 window.testclient = client;
   
 const Stat = () => {
+
+    function roundToTwo(num) {
+        return +(Math.round(num + "e+2")  + "e-2");
+    }
+
   const [userdata, setUserData] = useState("");
   const [olvasottKonyvek, setOlvasottKonyvek] = useState([]);
   const [chosenAuthor, setChosenAuthor] = useState("");
@@ -71,11 +76,10 @@ useEffect(() => {
         })
         return (
             <div>
-                <hr/>
-                Books read from <b>{unique.length}</b> different authors so far.
+                <h3>Books read from <b>{unique.length}</b> different authors so far.</h3>
                 <br/>
                 <br/>
-
+                <p>Select an author to see how many books You read from them:</p>
                 <Select autosize={true} placeholder="Choose an author" value={options.filter(function (option) {
                     return option.value === chosenAuthor;
                 })} options={options} onChange={e => {
@@ -98,27 +102,29 @@ class TimeAggregator extends React.Component {
             let summer = started.filter(x => x.getMonth() + 1 === 6 || x.getMonth() + 1 === 7 || x.getMonth() + 1 === 8).length
             let autumn = started.filter(x => x.getMonth() + 1 === 9 || x.getMonth() + 1 === 10 || x.getMonth() + 1 === 11).length
             let winter = started.filter(x => x.getMonth() + 1 === 12 || x.getMonth() + 1 === 1 || x.getMonth() + 1 === 2).length
-
-            return (
-                <div id="timeaggregator">
-                    This year you have read <b>{today}</b> books.
-                    <br/>
-                    <br/>
-                    You have read <b>{spring}</b> books in spring.
-                    <br/>
-                    <br/>
-                    You have read <b>{summer}</b> books in summer.
-                    <br/>
-                    <br/>
-                    You have read <b>{autumn}</b> books in autumn.
-                    <br/>
-                    <br/>
-                    You have read <b>{winter}</b> books in winter.
-                    <hr/>
-                </div>
-            )
+            const occurrences = started.reduce(function (acc, curr) {
+                return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
+              }, {});
+              const timeChart = {
+                labels: ["Spring", "Summer", "Autumn", "Winter"],
+                datasets : [
+                    {
+                        label: "Seasons",
+                        data:[spring, summer, autumn, winter],
+                        backgroundColor: 'rgba(79, 235, 52)',
+                        borderColor:  'rgba(79, 235, 52)'
+                    }
+                ]
+            }
+              return (<div>
+        
+                  This year you have read {today} books.
+                  <br/>
+                  <br/>
+                  <Line data={timeChart} options={{ticks: {stepSize: 1}}}/>
+              </div>)
+          }
         }
-    }
 
     class TagAggregator extends React.Component {
       render() {
@@ -141,8 +147,8 @@ class TimeAggregator extends React.Component {
                       setChosenTag(e.value)
                   }}/>
                   <br/>
-                  {chosenTag !== "" ? <p>You have read <b>{tags.filter(x => x === chosenTag).length} </b>books with
-                      tag <b> {chosenTag} </b></p> : ""}
+                  {chosenTag !== "" ? <h4>You have read <b>{tags.filter(x => x === chosenTag).length} </b>books with
+                     the  tag <b> {chosenTag} </b></h4> : ""}
                   <hr/>
               </div>
           )
@@ -152,57 +158,90 @@ class TimeAggregator extends React.Component {
   class TypeAggregator extends React.Component {
     render() {
         let type = olvasottKonyvek.map(a => a.type)
-        let hard = type.filter(x => x === "hard").length
-        let paper = type.filter(x => x === "paper").length
-        let ebook = type.filter(x => x === "ebook").length
-        let audio = type.filter(x => x === "audio").length
-        let graphic = type.filter(x => x === "graphic").length
-        return (<div id="typeaggregator">
-
-            You have read <b>{hard} </b> hardcover books.
-            <br/>
-            <br/>
-            You have read <b>{paper} </b> paperback books.
-            <br/>
-            <br/>
-            You have read <b> {ebook} </b>E-books.
-            <br/>
-            <br/>
-            You have read <b> {graphic} </b> graphic novels.
-            <br/>
-            <br/>
-            You have listened to <b> {audio} </b> audiobooks.
-            <hr/>
-        </div>)
+        const occurrences = type.reduce(function (acc, curr) {
+            return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
+          }, {});
+          occurrences['Graphic Novel'] = occurrences['graphic'];
+      delete occurrences['graphic'];
+      occurrences['Audiobook'] = occurrences['audio'];
+      delete occurrences['audio'];
+      occurrences['Hardcover'] = occurrences['hard'];
+      delete occurrences['hard'];
+      occurrences['Paperback'] = occurrences['paper'];
+      delete occurrences['paper'];
+      occurrences['E-book'] = occurrences['ebook'];
+      delete occurrences['ebook'];
+          const formatChart = {
+            labels: Object.keys(occurrences),
+            datasets : [
+                {
+                    label: "Formats",
+                    data:Object.values(occurrences),
+                    backgroundColor: 'rgba(235, 147, 52)'
+                }
+            ]
+        }
+          return (<div>
+              <Bar data={formatChart} options={{ticks: {stepSize: 1}}}/>
+          </div>)
+      }
     }
-}
 
 class LanguageAggregator extends React.Component {
   render() {
       let type = olvasottKonyvek.map(a => a.language)
       let hun = type.filter(x => x === "hun").length
       let eng = type.filter(x => x === "eng").length
+      const occurrences = type.reduce(function (acc, curr) {
+        return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
+      }, {});
+      occurrences['Hungarian'] = occurrences['hun'];
+      delete occurrences['hun'];
+      occurrences['English'] = occurrences['eng'];
+      delete occurrences['eng']
+      const langChart = {
+        labels: Object.keys(occurrences),
+        datasets : [
+            {
+                label: "Languages",
+                data:Object.values(occurrences),
+                backgroundColor: 'rgba(59, 74, 237)'
+            }
+        ]
+    }
       return (<div>
-
-          You have read <b>{hun} </b> Hungarian books.
-          <br/>
-          <br/>
-          You have read <b>{eng} </b> English books.
-          <hr/>
+          <Bar data={langChart} options={{ticks: {stepSize: 1}}}/>
       </div>)
   }
 }
-
 class ReadingTimeAggregator extends React.Component {
   render() {
       let diffTime = olvasottKonyvek.map(a => (a.ended-a.started)/(1000*60*60*24))
+      diffTime = diffTime.sort((a, b) => a - b);
+      let chartTime = diffTime.map(a => a.toFixed(1))
       const sum = diffTime.reduce((a, b) => a + b, 0);
       const avg = (sum / diffTime.length) || 0; 
+      const occurrences = chartTime.reduce(function (acc, curr) {
+        return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
+      }, {});
+      const readTimeChart = {
+          labels: Object.keys(occurrences),
+          datasets : [
+              {
+                  label: "Time to read a book",
+                  data:Object.values(occurrences),
+                  backgroundColor: 'rgba(235, 235, 52)'
+              }
+          ]
+      }
       return (<div>
 
-          The average time for you to read a book is: {avg.toFixed(2)} days.
+          The average time for you to read a book is: { avg.toFixed(2)} days.
           <br/>
-          <hr/>
+          The maximum time for you to read a book is: {Math.max(...chartTime)} days.
+          <br/>
+          The minimum time for you to read a book is: {Math.min(...chartTime)} days.
+          <Bar data={readTimeChart} options={{ticks: {stepSize: 1}}}/>
       </div>)
   }
 }
@@ -211,29 +250,25 @@ class RatingAggregator extends React.Component {
       let rate = olvasottKonyvek.map(a => a.rating)
       const sum = rate.reduce((a, b) => a + b, 0);
       const avg = (sum / rate.length) || 0;
-      let one = rate.filter(x => x === 1).length
-      let two = rate.filter(x => x === 2).length
-      let three = rate.filter(x => x === 3).length
-      let four = rate.filter(x => x === 4).length
-      let five = rate.filter(x => x === 5).length
+      const occurrences = rate.reduce(function (acc, curr) {
+        return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
+      }, {});
+      const ratingChart = {
+        labels: Object.keys(occurrences),
+        datasets : [
+            {
+                label: "Ratings",
+                data:Object.values(occurrences),
+                backgroundColor: 'rgba(204, 52, 235)'
+            }
+        ]
+    }
       return (<div id="rateaggregator">
 
           You gave a {avg.toFixed(2)} average rating.
           <br/>
           <br/>
-          You gave <b>{one}</b> 1-star rating.
-          <br/>
-          <br/>
-          You gave <b>{two}</b> 2-star rating.
-          <br/>
-          <br/>
-          You gave <b>{three}</b> 3-star rating.
-          <br/>
-          <br/>
-          You gave <b>{four}</b> 4-star rating.
-          <br/>
-          <br/>
-          You gave <b>{five}</b> 5-star rating.
+          <Bar data={ratingChart} options={{ticks: {stepSize: 1}}}/>
       </div>)
   }
 }
@@ -260,15 +295,38 @@ class RatingAggregator extends React.Component {
 return (
     <div id="main">
      <div id="left">
+         <div id="authaggregator">
+         
        <AuthAggregator />
+       </div>
+       <div id="timeaggregator">
+       <h3>Your reading during this year:</h3>
        <TimeAggregator />
+       </div>
+      
+       <div id="tagaggregator">
+           <p>Select a tag to see how many books You read about it:</p>
        <TagAggregator />
+       </div>
+       <div id="readingtimeaggregator">
+           <h3>How long it takes to read a book:</h3>
+       <ReadingTimeAggregator />
+       </div>
      </div>
      <div id="right">
+         <div id="typeaggregator">
+             <h3>Formats You have read in:</h3>
        <TypeAggregator />
+       </div>
+       <div id="languageaggregator">
+           <h3>Languages You have read:</h3> 
        <LanguageAggregator />
+       </div>
+       <div id="ratingaggregator">
+       <h3>Your ratings:</h3>
        <RatingAggregator />
-       <ReadingTimeAggregator />
+       </div>
+      
      </div>
     </div>
 );
