@@ -437,7 +437,7 @@ return (
 		</div>
 		<div id="favorites">
 			<h1>Favorite books</h1>
-			<FavoriteBooks />>
+			<FavoriteBooks />
 		</div>
 		<div id="dailytrack">
 			<h1>Daily reading tracker</h1>

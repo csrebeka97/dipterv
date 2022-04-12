@@ -1,0 +1,12 @@
+table {border: none;}
+
+#index 
+    {
+     margin: auto;
+    width: 90%; 
+    display:flex;
+    }
+
+    h1{
+        font-family: fantasy;
+    }
