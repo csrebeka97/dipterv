@@ -3,16 +3,10 @@ import './stat.css';
 import axios from 'axios';
 import {wrapper} from 'axios-cookiejar-support';
 import {CookieJar} from 'tough-cookie';
-import React, {useEffect, useState, useRef, Component} from 'react';
-import Cookies from 'js-cookie';
+import React, {useEffect, useState} from 'react';
 import { Link} from "react-router-dom";
 import Select from 'react-select';
-import Table from 'react-bootstrap/Table';
 import {Bar} from 'react-chartjs-2';
-import DatePicker from "react-datepicker";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faTrashAlt} from "@fortawesome/free-regular-svg-icons";
-import {faHeart} from "@fortawesome/free-regular-svg-icons";
 import "react-datepicker/dist/react-datepicker.css";
 import 'bootstrap/dist/css/bootstrap.css';
 import { Line } from 'react-chartjs-2';
@@ -24,10 +18,6 @@ client.defaults.withCredentials = true
 window.testclient = client;
   
 const Stat = () => {
-
-    function roundToTwo(num) {
-        return +(Math.round(num + "e+2")  + "e-2");
-    }
 
   const [userdata, setUserData] = useState("");
   const [olvasottKonyvek, setOlvasottKonyvek] = useState([]);
@@ -102,9 +92,6 @@ class TimeAggregator extends React.Component {
             let summer = started.filter(x => x.getMonth() + 1 === 6 || x.getMonth() + 1 === 7 || x.getMonth() + 1 === 8).length
             let autumn = started.filter(x => x.getMonth() + 1 === 9 || x.getMonth() + 1 === 10 || x.getMonth() + 1 === 11).length
             let winter = started.filter(x => x.getMonth() + 1 === 12 || x.getMonth() + 1 === 1 || x.getMonth() + 1 === 2).length
-            const occurrences = started.reduce(function (acc, curr) {
-                return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
-              }, {});
               const timeChart = {
                 labels: ["Spring", "Summer", "Autumn", "Winter"],
                 datasets : [
@@ -190,8 +177,6 @@ class TimeAggregator extends React.Component {
 class LanguageAggregator extends React.Component {
   render() {
       let type = olvasottKonyvek.map(a => a.language)
-      let hun = type.filter(x => x === "hun").length
-      let eng = type.filter(x => x === "eng").length
       const occurrences = type.reduce(function (acc, curr) {
         return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
       }, {});

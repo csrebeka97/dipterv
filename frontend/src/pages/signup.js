@@ -3,7 +3,7 @@ import './signup.css';
 import axios from 'axios';
 import {wrapper} from 'axios-cookiejar-support';
 import {CookieJar} from 'tough-cookie';
-import React, {useEffect, useState, useRef, Component} from 'react';
+import React, {useEffect, useState} from 'react';
 
 const jar = new CookieJar();
 const client = wrapper(axios.create({jar}));
@@ -19,18 +19,24 @@ function SignUp() {
 
 
 		useEffect(() => {
+			if(user !== ""){
 			client.post('http://localhost:8765/signup', {
             id: user.id,
 			password: user.password,
 			name: user.name,
 			email: user.email
-		}).then(console.log)
-		}, [user]);
+		}).then(emptyForm)
+		}}, [user]);
 
 		function submitForm(){
 			setUser({"id": username, "password": password, "name": name, "email": email})			
 		}
-
+		function emptyForm(){
+			setUsername("");
+			setPassword("");
+			setEmail("");
+			setName("");			
+		}
 	  return (
 		  <div>
 		  <h1> Sign Up Page</h1>	

@@ -3,7 +3,7 @@ import './login.css';
 import axios from 'axios';
 import {wrapper} from 'axios-cookiejar-support';
 import {CookieJar} from 'tough-cookie';
-import React, {useEffect, useState, useRef, Component} from 'react';
+import React, {useEffect, useState} from 'react';
 
 const jar = new CookieJar();
 const client = wrapper(axios.create({jar}));
@@ -17,6 +17,7 @@ function Login() {
 
 
 		useEffect(() => {
+			if(user !== ""){
 			client.post('http://localhost:8765/login', {
             id: user.id,
 			password: user.password
@@ -25,6 +26,7 @@ function Login() {
 		  }).catch(function(error) {
 			console.log('Error on Authentication');
 		  })
+		}
 		}, [user]);
 
 		function submitForm(){

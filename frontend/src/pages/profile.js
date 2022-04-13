@@ -3,8 +3,7 @@ import './profile.css';
 import axios from 'axios';
 import {wrapper} from 'axios-cookiejar-support';
 import {CookieJar} from 'tough-cookie';
-import React, {useEffect, useState, useRef, Component} from 'react';
-import Cookies from 'js-cookie';
+import React, {useEffect, useState} from 'react';
 import { Link} from "react-router-dom";
 import Select from 'react-select';
 import Table from 'react-bootstrap/Table';
@@ -74,20 +73,19 @@ function Profile() {
                 week3: range(15, 21, 1),
                 week4: range(22, 28, 1),
                 leap: (year.getFullYear() % 100 === 0) ? (year.getFullYear() % 400 === 0) : (year.getFullYear() % 4 === 0),
-                week5: diff == 0 ? [] : diff == 1 ? [29] : diff == 2 ? [29, 30] : [29, 30, 31],
+                week5: diff === 0 ? [] : diff === 1 ? [29] : diff === 2 ? [29, 30] : [29, 30, 31],
                 dIndex: days.findIndex((item) => item[0] === currentlyChecked)
             };
         }
 
         render() {
-            let index = 0;
             if (this.state.leap) {
                 days[1][1] = 29;
             }
             return (<div>
 
                 <Select autosize={true} selectedValue={currentlyChecked} value={checkOptions.filter(function (option) {
-                    return (option.value == currentlyChecked)
+                    return (option.value === currentlyChecked)
                 })
                 }
                         options={checkOptions} onChange={e => {
@@ -96,7 +94,7 @@ function Profile() {
                     setDiff(days[index][1] - 28)
 
                     this.setState({
-                        week5: diff == 0 ? [] : diff == 1 ? [29] : diff == 2 ? [29, 30] : [29, 30, 31], dIndex: index
+                        week5: diff === 0 ? [] : diff === 1 ? [29] : diff === 2 ? [29, 30] : [29, 30, 31], dIndex: index
                     }, () => {
                         return this.state.week5, this.state.dIndex
                     })
@@ -225,7 +223,7 @@ function Profile() {
 	class CalendarDiagram extends React.Component {
         render() {
             return (
-                <Bar data={calendarData} height={100} options={{ticks: {stepSize: 1}}}/>
+                <Bar data={calendarData} height={100} options={{ ticks: {stepSize: 1, backdropColor:'rgba(255, 255, 255, 0.75)'}}}/>
             )
         }
     }
@@ -233,7 +231,7 @@ function Profile() {
     class FavoriteBooks extends React.Component {
         render() {
             return (
-                <Table striped bordered hover >
+                <Table>
                     <thead>
                     <tr>
                         <th></th>
@@ -246,7 +244,7 @@ function Profile() {
                         const index = kedvenc.findIndex((i) => item.id === i.id);
                                                return (
                             <tr>
-                                <td><img src={item.cover}></img></td>
+                                <td><img src={item.cover} alt=""></img></td>
                                 <td>{item.author.join(", ")}</td>
                                 <td>{item.title}</td>                                
                                  </tr>
@@ -266,7 +264,7 @@ function Profile() {
     }, [])
 
     useEffect(() => {
-        if(userdata.username != "") {
+        if(userdata.username !== "") {
         client.get(`http://localhost:8765/favorites`)
             .then(res => {
                 setKedvenc([...res.data])
@@ -275,7 +273,7 @@ function Profile() {
     }, [userdata])
 
 	useEffect(() => {
-		if(monthlyDays != ""){
+		if(monthlyDays !== ""){
         client.post('http://localhost:8765/dailyTracker', {
             monthlyDays: monthlyDays
         }).then(console.log);
@@ -335,7 +333,7 @@ function Profile() {
     }, [])
 
 	useEffect(() => {
-		if(userdata != "") {
+		if(userdata !== "") {
 		client.post('http://localhost:8765/profiledata', {
 			userdata: userdata
 		}).then(console.log);
@@ -344,14 +342,15 @@ function Profile() {
 
 useEffect(() => {
         if(genreedited ===true){
-			var array = []
-		var checkboxes = document.querySelectorAll('input[type=checkbox]:checked')
-		for (var i = 0; i < checkboxes.length; i++) {
- 		 array.push(checkboxes[i].value)
-			}
+            const values = Array
+            .from(document.querySelectorAll('input[type="checkbox"]'))
+            .filter((checkbox) => checkbox.checked)
+            .map((checkbox) => checkbox.value);
+            var filteredArray = values.filter(function(e) { return e !== 'on' })
 		setGenreClick(false)
 		setGenreEdited(false)
-		setUserData({"username": userdata.username, "name": userdata.name, "genres":array, "introduction": userdata.introduction})
+		setUserData({"username": userdata.username, "name": userdata.name, "genres":filteredArray, "introduction": userdata.introduction})
+
 		}
     }, [genreedited]) 
 
@@ -366,7 +365,7 @@ useEffect(() => {
 	}
     }, [introedited]) 
 
-	if (userdata === "" || userdata.username == ""){
+	if (userdata === "" || userdata.username === ""){
 		return (
 			<div >
 				<div>
@@ -394,7 +393,7 @@ return (
 			<h2>Favorite genres:</h2>			
 			
 			{(() => {
-              if (genreclick == false){
+              if (genreclick === false){
                   return (
 					  <div>
 					{userdata.genres.map((i) => <p>{i}</p>)}
@@ -403,20 +402,20 @@ return (
               else {
 				  return (
 					  <div>
-<label><input type="checkbox" name="genre" value="Horror"></input>Horror</label>
-		<label><input type="checkbox" name="genre" value="Thriller"></input>Thriller</label>
-		<label><input type="checkbox" name="genre" value="Romantic"></input>Romantic</label>
-		<label><input type="checkbox" name="genre" value="LMBT"></input>LMBT</label>
-		<label><input type="checkbox" name="genre" value="Classical"></input>Classical</label>
-		<label><input type="checkbox" name="genre" value="Sci-fi"></input>Sci-fi</label>
-		<label><input type="checkbox" name="genre" value="Fantasy"></input>Fantasy</label>
-		<label><input type="checkbox" name="genre" value="Crime stories"></input>Crime stories</label>
+<label><input type="checkbox" name="genre" value="Horror"></input>Horror</label><br/>
+		<label><input type="checkbox" name="genre" value="Thriller"></input>Thriller</label><br/>
+		<label><input type="checkbox" name="genre" value="Romantic"></input>Romantic</label><br/>
+		<label><input type="checkbox" name="genre" value="LMBT"></input>LMBT</label><br/>
+		<label><input type="checkbox" name="genre" value="Classical"></input>Classical</label><br/>
+		<label><input type="checkbox" name="genre" value="Sci-fi"></input>Sci-fi</label><br/>
+		<label><input type="checkbox" name="genre" value="Fantasy"></input>Fantasy</label><br/>
+		<label><input type="checkbox" name="genre" value="Crime stories"></input>Crime stories</label><br/>
 <button type='button' onClick={(e) => {setGenreEdited(true)}}>Submit</button>
 </div>				  )}
             })()}
 			<h2>About Me</h2>
 			{(() => {
-              if (introclick == false){
+              if (introclick === false){
                   return (
 					  <div>
 					  <p>{userdata.introduction}</p>
@@ -433,12 +432,14 @@ return (
 				)
 			  }
             })()}
-			
-		</div>
-		<div id="favorites">
+            <br/>
+            <br/>
+			<div id="favorites">
 			<h1>Favorite books</h1>
 			<FavoriteBooks />
 		</div>
+		</div>
+		
 		<div id="dailytrack">
 			<h1>Daily reading tracker</h1>
 			<Checker/>

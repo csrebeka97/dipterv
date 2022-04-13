@@ -43,6 +43,7 @@ const ReadingTable = () => {
     }, {value: 5, label: 5}];
     const [allfav, setAllfav] = useState([]);
     const current = new Date();
+    const [legelso, setLegelso] = useState(false);
 
 	class Searchbar extends React.Component {
         render() {
@@ -122,7 +123,7 @@ const ReadingTable = () => {
                         const index = olvasottKonyvek.findIndex((i) => item.id === i.id);
                         let updatedItem = ""
                         const favindex = kedvenc.findIndex((i) => item.molyid === i.molyid);
-                       console.log(favindex)                       
+                       
                         return (
                             <tr>
                                 <td>{item.id}</td>
@@ -164,19 +165,22 @@ const ReadingTable = () => {
 							<td>
                                     {item.isKedvenc === false &&
                                     <button class="btn" onClick={e => {
+                                        console.log(favindex) 
                                        setKedvenc([...kedvenc, item]);                                   
                                        updatedItem = Object.assign({}, item, {isKedvenc: true})
                                        setOlvasottKonyvek([...olvasottKonyvek.slice(0, index), updatedItem, ...olvasottKonyvek.slice(index + 1)])
-									   console.log("ez a kedvenc")
-									   console.log(kedvenc)
                                     }}><FontAwesomeIcon icon={faHeart} /></button>
                                 }
                                   {item.isKedvenc === true &&
                                     <button class="btn" onClick={e => {
+                                        console.log(favindex)    
                                         if(favindex ===0){
+                                            setLegelso(true);
                                             setKedvenc([]);
+                                           
                                         }
                                         else {
+                                            setLegelso(false);
                                         setKedvenc([...kedvenc.slice(0, favindex), ...kedvenc.slice(favindex + 1)])
                                         }
                                         updatedItem = Object.assign({}, item, {isKedvenc: false})
@@ -204,7 +208,9 @@ const ReadingTable = () => {
         if (userdata.username !== "") {
         client.get(`http://localhost:8765/favorites`)
             .then(res => {
+                if(res.data.length){
                 setKedvenc(res.data)
+                }
             });}
     }, [userdata])
 
@@ -219,7 +225,6 @@ const ReadingTable = () => {
 		if (userdata.username !== "") {
         client.get(`http://localhost:8765/olvasottKonyvek`)
             .then(res => {
-                console.log(res.data)
                 let tempid = 1
                 let temp = res.data
                 temp.map((i) => {
@@ -243,11 +248,13 @@ const ReadingTable = () => {
     }, [olvasottKonyvek]);
 
 	useEffect(() => {
-        if (userdata.username  !== "") {
+        if (userdata.username !== "") {
+            console.log(legelso)
+            if(kedvenc.length || legelso===true){
             client.post('http://localhost:8765/favorites', {
                 kedvenc: kedvenc
             }).then(console.log(kedvenc));
-        }
+        }}
     }, [kedvenc]);
 
 	useEffect(() => {
