@@ -1,0 +1,88 @@
+#loginneeded {
+    margin: auto;
+    width: 30%;
+    text-align: center;
+    border: 2px solid #63D471;
+    border-radius: 25px;
+}
+
+#loginbutton {
+    background-color:  #63D471; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 20px;
+}
+
+#wrapper {
+    margin: auto;
+    width: 70%;
+    
+    overflow: hidden; /* will contain if #first is longer than #second */
+
+}
+#profileinfo {
+    width: 50%;
+    float:left; /* add this */
+    background: rgb(238,174,202);
+    background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,0.2497373949579832) 100%);
+}
+#favorites{
+
+    overflow: hidden; /* if you don't want #second to wrap below #first */
+}
+
+#dailytrack{
+    width:50%;
+    float:left;
+}
+
+
+
+/* CSS */
+button {
+  align-items: center;
+  appearance: none;
+  background-color: #3EB2FD;
+  background-image: linear-gradient(1deg, #4F58FD, #149BF3 99%);
+  background-size: calc(100% + 20px) calc(100% + 20px);
+  border-radius: 100px;
+  border-width: 0;
+  box-shadow: none;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: CircularStd,sans-serif;
+  font-size: 1rem;
+  height: auto;
+  justify-content: center;
+  line-height: 1.5;
+  padding: 6px 20px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color .2s,background-position .2s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+button:active,
+button:focus {
+  outline: none;
+}
+
+button:hover {
+  background-position: -20px -20px;
+}
+
+button:focus:not(:active) {
+  box-shadow: rgba(40, 170, 255, 0.25) 0 0 0 .125em;
+}

@@ -1,0 +1,73 @@
+#main 
+    {
+     margin: auto;
+    width: 50%; 
+    display:flex;
+     flex-direction:row;
+    }
+ 
+    #left {
+        width: 50%;
+        float:left; 
+    }
+
+    #right {
+        width: 50%;
+        float:left; 
+    }
+
+#readingtimeaggregator {
+    border: 5px;
+    border-style:solid;
+    border-color:azure;
+        background-color:aliceblue;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+#ratingaggregator {
+    border: 5px;
+    border-style:solid;
+    border-color:azure;
+        background-color:aliceblue;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+
+}
+
+#languageaggregator {
+    border: 5px;
+    border-style:solid;
+    border-color:azure;
+        background-color:aliceblue;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+
+}
+#typeaggregator {
+    border: 5px;
+    border-style:solid;
+    border-color:azure;
+        background-color:aliceblue;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+#tagaggregator {
+    border: 5px;
+    border-style:solid;
+    border-color:azure;
+        background-color:aliceblue;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+#authaggregator {
+    border: 5px;
+    border-style:solid;
+    border-color:azure;
+        background-color:aliceblue;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+#timeaggregator {
+    border: 5px;
+    border-style:solid;
+    border-color:azure;
+        background-color:aliceblue;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
